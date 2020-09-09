@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<meta charset = "UTF-8">
+<head>
+
+<script src="jquery.js"></script>
+<script src="word.js"></script>
+<script src="details.js"></script>
+<script src="images.js"></script>
+<script src="LM.js"></script>
+<script> 
+var number = [0];
+var readingNow = new Array();
+var serialNo = 0;
+var count = 0;
+var aim = 0;
+//////////
+var readingSet = 0;
+var createSet = 1;
+var readingValue = 1;
+var remaining = LM_calculate();
+var Imageformat = ".HEIC";
+alert(remaining);
+
+
+window.addEventListener("keydown",eventControllar,false);
+$(document).ready(function(){
+  $("#flip").click(function(){
+    $("#panel").slideToggle("slow");
+  });
+});
+function next(){
+	count++;
+	if(count<remaining)
+	{
+	if(count==number.length){selectNumber();}
+        while(LM[number[count]]==createSet)count++;
+     	aim++;
+		document.getElementById("flip").innerHTML =2+parseInt([number[count]])+"_"+"" + aim + "_"+count + ". " + word[number[count]];
+	    document.getElementById("details").innerHTML = details[number[count]];
+	    document.getElementById("myImg").src = "BCS Bangla/"+IMG[number[count]]+Imageformat;	
+		readingNow[number[count]] = readingValue;
+	}
+	if(count > remaining)
+	{
+	count = remaining;
+	alert("There is no more later!! Thank you");
+	}
+	document.getElementById("check").checked = false;
+}
+function previous(){
+
+    document.getElementById("check").checked = false;
+	
+	if(count>0){
+	count--;
+	while(LM[number[count]]==createSet)count--;
+	aim--;
+	document.getElementById("flip").innerHTML = 2+parseInt([number[count]])+"_"+"" + aim + "_"+count + " " + word[number[count]];
+	document.getElementById("details").innerHTML = details[number[count]];
+	document.getElementById("myImg").src = "BCS Bangla/"+IMG[number[count]]+Imageformat;
+	}
+	else{alert("there is no more!!Before");count =0;aim = 0;}
+}
+function selectNumber(){
+	var selected = false;
+	var i = 0;
+	if(count!=LM_calculate()){
+	while(!selected){
+		serialNo = parseInt(RandomNumber()*word.length);
+		for(i=0;i<number.length;i++)
+		{
+			if(serialNo == number[i]||LM[serialNo]!=readingSet){
+			selected = false;
+			break;
+			}else{
+			selected = true;
+			}
+		}
+	}
+	number.push(serialNo);
+	}
+}
+function LM_calculate(){
+    var numOfLm = 0;
+	var i = 0;
+    for(i = 0;i<LM.length;i++){
+	if(LM[i]==readingSet)numOfLm++;
+	}
+//	alert(numOfLm+"---"+word.length);
+    return numOfLm;
+}
+function RandomNumber(){
+	var num = Math.random();
+	
+	return num;
+}
+function slideDown(){
+	$(document).ready(function(){
+    $("#panel").slideDown("fast");
+});
+}
+function slideUp(){
+	$(document).ready(function(){
+    $("#panel").slideUp("fast");
+});
+}
+function eventControllar(e){
+			if(e.keyCode==35)
+			previous();
+			else if(e.keyCode==38)
+			slideUp();
+			else if(e.keyCode==39)
+			next();
+			else if(e.keyCode==40)
+			slideDown();
+			else if(e.keyCode==16)
+			{
+			 memorised();
+			 next();
+			}
+	}
+function memorised(){
+         LM[number[count]] = createSet;
+		 readingNow[number[count]] = createSet;
+}
+var showLm = 0;
+function LMoutput(){
+     if(showLm==0){
+         document.getElementById("LMoutput").innerHTML = "var LM =    ["+LM+"];";
+         document.getElementById("readingOutput").innerHTML = "var readingNow =    ["+readingNow+"];";
+		 showLm = 1;
+		 }
+	else{
+		 document.getElementById("LMoutput").innerHTML ="";
+         document.getElementById("readingOutput").innerHTML = "";
+		 showLm = 0;
+		 }
+}
+function setReadingSet(){
+         readingSet = parseInt(document.getElementById("readingSet").value);
+		 remaining = LM_calculate();
+		 count = 0;
+		 number = [0];
+		 alert(remaining);
+}
+function setPower(){
+document.getElementById("setPower").value = createSet;
+      //  createSet = parseInt(document.getElementById("setPower").value);
+}
+function loadAtStarting(){
+
+if(LM.length==details.length && LM.length==word.length && LM.length == IMG.length){
+for(var i = 0; i<LM.length; i++){
+readingNow.push(LM[i]);
+}
+//alert(readingNow.length+"--"+LM.length);
+//readingNow = LM;
+createSet = Math.max(...LM)+1;
+document.getElementById("readingSet").value = readingSet;
+document.getElementById("setPower").value = createSet;
+}
+else alert("Check all input Files!! length is different..");
+}
+</script>
+ 
+<style> 
+#panel,#flip
+{
+padding:5px;
+text-align:center;
+background-color:black;
+border:solid 1px #c3c3c3;
+float:left;
+width:80%;
+}
+#panel
+{
+padding:10px;
+display:none;
+width:90%;
+}
+body {
+    background-color: black;
+	font-size: 200%;
+	color:white;
+}
+#button1{
+	background-color:black;
+	position: relative;
+	float: left;
+}
+#button2{
+	background-color:black;
+	position: relative;
+	float: left;
+	
+}
+#pack{
+	position: relative;
+	width: 100%;
+}
+img{
+    width: 70%;
+	height:70%;
+	border-style:solid;
+}
+p{
+    word-break:break-all;
+}
+#readingSet,#setPower{
+width:30px;
+}
+label,#LMoutput,#readingOutput{
+font: 15px Areal;
+}
+</style>
+</head>
+<body onload = "loadAtStarting()">
+ 
+<div id = "pack">
+    <div id = "button1"><button onclick = "previous()">previous</button></div>
+	<div id="flip">Hi i'm Tom.Click me!!</div>
+	<div id = "button2"><button onclick = "next()">Next</button></div>
+    <input type = "checkbox" id = "check" onclick = "memorised()">
+</div>
+<div id="panel">
+
+<p id = "details">"tom is a person who will show you 
+the qus. i am mirra i will show you 
+the description.whenever you need any 
+description just click on tom i will open 
+out.to close me click on Tom again.!!",
+</p>
+<img id="myImg" width = "500" height = "281" src = "BCS Bangla/AISHUVO.JPG">				
+</div>
+<button onclick = "LMoutput()">LMoutut</button>
+<label>Reading Set</label><input onchange = "setReadingSet()" type = "number" id = "readingSet">
+<label>Set Power</label><input onclick = "setPower()" type = "number" id = "setPower">
+<p id = "LMoutput"></p>
+<p id = "readingOutput"></p>
+</body>
+
+<!-- Mirrored from www.w3schools.com/jquery/tryit.asp?filename=tryjquery_slide_down by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 23 Jan 2015 07:26:15 GMT -->
+</html>
